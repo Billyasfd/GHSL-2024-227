@@ -17,5 +17,14 @@ jobs:
           
       - name: Run Build
         run: |
-          # If the cache is poisoned, this executes the attacker's binary
+          # Ensure the directory exists to avoid 'No such file' errors
+          mkdir -p ./bin
+          
+          # Check if the tool exists; if not, create a dummy for the first run
+          if [ ! -f "./bin/helper-tool" ]; then
+            echo "echo 'Initializing Tool'" > ./bin/helper-tool
+            chmod +x ./bin/helper-tool
+          fi
+
+          # Execute the tool (Poisoned or Legitimate)
           ./bin/helper-tool --mode production
