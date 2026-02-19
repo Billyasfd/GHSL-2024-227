@@ -1,0 +1,21 @@
+name: Production Build
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Cache Dependencies
+        uses: actions/cache@v3
+        with:
+          path: ./bin/helper-tool
+          key: ${{ runner.os }}-build-cache
+          
+      - name: Run Build
+        run: |
+          # If the cache is poisoned, this executes the attacker's binary
+          ./bin/helper-tool --mode production
