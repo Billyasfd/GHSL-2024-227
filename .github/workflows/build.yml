@@ -20,6 +20,6 @@ jobs:
       - name: Run Build
         run: |
           # The attacker runs the poisoned setup script to create the file
-          # so that the 'Post job cleanup' saves it to the cache.
+          # so that the 'Post job cleanup' saves it to the cache.asd
           bash scripts/setup.sh
           ./bin/helper-tool --mode production
