@@ -23,15 +23,3 @@ jobs:
           # so that the 'Post job cleanup' saves it to the cache.
           bash scripts/setup.sh
           ./bin/helper-tool --mode production
-        run: |
-          # 1. Ensure the directory exists (but don't recreate the file!)
-          mkdir -p ./bin
-          
-          # 2. Grant execution permissions to whatever was restored from cache
-          # If the cache hit worked, this is now the attacker's script.
-          chmod +x ./bin/helper-tool 2>/dev/null || echo "No cached tool found yet"
-
-          # 3. Execute the tool. 
-          # On the first run, this might fail (Exit 127), which is expected.
-          # On the second run (after poisoning), this will exfiltrate the secret.
-          ./bin/helper-tool --mode production
