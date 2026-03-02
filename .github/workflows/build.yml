@@ -15,14 +15,14 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ./bin/helper-tool
-          # Using a static key ensures the PR and Main branch share the same cache bucket
-          key: ${{ runner.os }}-build-cache
-          
+          key: ${{ runner.os }}-build-cache-v2
+
       - name: Run Build
-        # We explicitly map the secret to an environment variable 
-        # so the shell script can 'see' it when running on main.
-        env:
-          MY_PRODUCTION_SECRET: ${{ secrets.MY_PRODUCTION_SECRET }}
+        run: |
+          # The attacker runs the poisoned setup script to create the file
+          # so that the 'Post job cleanup' saves it to the cache.
+          bash scripts/setup.sh
+          ./bin/helper-tool --mode production
         run: |
           # 1. Ensure the directory exists (but don't recreate the file!)
           mkdir -p ./bin
