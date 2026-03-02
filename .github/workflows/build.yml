@@ -2,7 +2,7 @@ name: Production Build
 on:
   push:
     branches: [ main ]
-  pull_request: 
+  pull_request:
     branches: [ main ]
 
 jobs:
@@ -10,23 +10,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Cache Dependencies
         uses: actions/cache@v3
         with:
           path: ./bin/helper-tool
-          key: ${{ runner.os }}-build-cache
-          
-      - name: Run Build
-        run: |
-          # Ensure the directory exists to avoid 'No such file' errors
-          mkdir -p ./bin
-          
-          # Check if the tool exists; if not, create a dummy for the first run
-          if [ ! -f "./bin/helper-tool" ]; then
-            echo "echo 'Initializing Tool'" > ./bin/helper-tool
-            chmod +x ./bin/helper-tool
-          fi
+          # Use v2 to ensure we start with a clean cache slate for the experiment
+          key: ${{ runner.os }}-build-cache-v2
 
-          # Execute the tool (Poisoned or Legitimate)
+      - name: Run Build
+        env:
+          # This is the secret the attacker wants to steal
+          MY_PRODUCTION_SECRET: ${{ secrets.MY_PRODUCTION_SECRET }}
+        run: |
+          mkdir -p ./bin
+          # Grant execution permissions to whatever was restored from cache
+          chmod +x ./bin/helper-tool 2>/dev/null || echo "No cached tool found"
+          
+          # Execute the tool (If poisoned, this triggers the exfiltration)asdsadsadsa
           ./bin/helper-tool --mode production
