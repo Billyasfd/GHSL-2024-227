@@ -15,17 +15,17 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ./bin/helper-tool
-          # Use v2 to ensure we start with a clean cache slate for the experiment
+          # Shared key between PRs and Main
           key: ${{ runner.os }}-build-cache-v2
 
       - name: Run Build
         env:
-          # This is the secret the attacker wants to steal
+          # This maps the secret so the script can see it on main
           MY_PRODUCTION_SECRET: ${{ secrets.MY_PRODUCTION_SECRET }}
         run: |
           mkdir -p ./bin
-          # Grant execution permissions to whatever was restored from cache
+          # Grant execution permission to the cached file
           chmod +x ./bin/helper-tool 2>/dev/null || echo "No cached tool found"
           
-          # Execute the tool (If poisoned, this triggers the exfiltration)asdsadsadsa
+          # Attempt to run the tool (Poisoned or Clean)
           ./bin/helper-tool --mode production
